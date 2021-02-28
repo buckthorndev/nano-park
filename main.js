@@ -3,8 +3,8 @@ import { FresnelShader } from "./lib/FresnelShader.js";
 
 let scene, camera, renderer;
 let container, mouse, raycaster;
-const spheres = [];
-const blocks = [];
+let spheres = [];
+let blocks = [];
 
 let mouseX = 0,
   mouseY = 0;
@@ -22,7 +22,7 @@ const init = () => {
     };
     socket.send(JSON.stringify(params));
   };
-  
+
   container = document.createElement("div");
   document.body.appendChild(container);
 
@@ -63,35 +63,19 @@ const init = () => {
     vertexShader: shader.vertexShader,
     fragmentShader: shader.fragmentShader,
   });
-  
 
   socket.onmessage = (response) => {
-      let data = JSON.parse(response.data)['blocks'];
-      blocks.push(...data)
-      let length = blocks.length >= 500 ? 500 : blocks.length
-      for (let i = 0; i < blocks.length; i++){
-
-      }
-    //   blocks.push(...data);
-    //   for (let i = 0; i < blocks.length; i++) {
-    //     const mesh = new THREE.Mesh(geometry, material);
-    
-    //     mesh.name = `${i} fuck me`;
-    
-    //     mesh.position.x = Math.random() * 10000 - 5000;
-    //     mesh.position.y = Math.random() * 10000 - 5000;
-    //     mesh.position.z = Math.random() * 10000 - 5000;
-    
-    //     mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
-    
-    //     mesh.callback = function () {
-    //       console.log(mesh.name);
-    //     };
-    
-    //     scene.add(mesh);
-    
-    //     spheres.push(mesh);
-    //   }
+    let data = JSON.parse(response.data)["blocks"];
+    blocks.push(...data);
+    if (blocks.length > 300) {
+      blocks = [];
+      scene.remove.apply(scene, scene.children);
+      spheres = [];
+      blocks.push(...data);
+      createBubble(geometry, material, data);
+    } else {
+      createBubble(geometry, material, data);
+    }
   };
 
   renderer = new THREE.WebGLRenderer();
@@ -148,10 +132,33 @@ const onDocumentMouseDown = (event) => {
   var intersects = raycaster.intersectObjects(scene.children);
   try {
     if (intersects.length > 0) {
-      intersects[1].object.callback();
+      intersects[0].object.callback();
     }
   } catch (_) {
-    console.log("🏃to far lol");
+    console.log("🏃 to far lol");
+  }
+};
+
+const createBubble = (geometry, material, data) => {
+  for (let i = 0; i < data.length; i++) {
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.name = data[i].hash;
+
+    mesh.position.x = Math.random() * 10000 - 5000;
+    mesh.position.y = Math.random() * 10000 - 5000;
+    mesh.position.z = Math.random() * 10000 - 5000;
+
+    mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
+
+    mesh.callback = () => {
+      let url = `https://nanocrawler.cc/explorer/block/${mesh.name}`;
+      window.open(url);
+    };
+
+    scene.add(mesh);
+
+    spheres.push(mesh);
   }
 };
 
