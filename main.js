@@ -1,6 +1,8 @@
 import * as THREE from "./lib/three.module.js";
 import { FresnelShader } from "./lib/FresnelShader.js";
 
+// Created by @BuckthornDev
+
 let scene, camera, renderer;
 let container, mouse, raycaster;
 let spheres = [];
