@@ -80,12 +80,15 @@ const init = () => {
     }
   };
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   container.appendChild(renderer.domElement);
   window.addEventListener("resize", onWindowResize);
+  // let controls = new THREE.OrbitControls(camera, renderer.domElement);
+  // controls.minDistance = 500;
+  // controls.maxDistance = 1500;
 };
 
 const onWindowResize = () => {
